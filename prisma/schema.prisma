@@ -11,3 +11,66 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model Personagem{
+  Id_personagem   Int     @id @default(autoincrement())
+  Nome_personagem String  @db.VarChar(40)
+  Classe          Classes
+  Nivel           Int     @db.SmallInt
+  Pontos          Int     @db.SmallInt
+  CH              Comprar_habilidade[]
+  PH              Personagem_habilidade[]
+  @@map("personagens")
+}
+
+model Habilidade{
+  Id_habilidade       Int     @id @default(autoincrement())
+  Nome_habilidade     String  @db.VarChar(40)
+  Descricao           String  @db.VarChar(120)
+  Tipo                Tipos
+  Nivel_necessario    Int     @db.SmallInt
+  Pontos_necessarios  Int     @db.SmallInt
+  CH                  Comprar_habilidade[]
+  PH                  Personagem_habilidade[]
+  @@map("habilidades")
+}
+
+model Comprar_habilidade{
+  Personagem       Personagem  @relation(fields: [Personagem_Id], references: [Id_personagem])
+  Personagem_Id    Int         
+  Habilidade       Habilidade  @relation(fields: [Habilidade_Id], references: [Id_habilidade])
+  Habilidade_Id    Int         
+  Data             DateTime    @default(now())
+  Pontos_gastos    Int         @db.SmallInt
+  Analise_nivel    Int         @db.SmallInt
+  @@id([Personagem_Id, Habilidade_Id])
+  @@map("comprar_habilidades")
+}
+
+model Personagem_habilidade{
+  Id               Int         @id @default(autoincrement())
+  Personagem       Personagem  @relation(fields: [Personagem_Id], references: [Id_personagem])
+  Personagem_Id    Int        
+  Habilidade       Habilidade  @relation(fields: [Habilidade_Id], references: [Id_habilidade])
+  Habilidade_Id    Int 
+  Data             DateTime    @default(now())
+  @@map("personagem_habilidades")
+}
+
+enum Classes {
+  Guerreiro 
+  Mago 
+  ladrão
+  Clérigo 
+  Monge
+  Druida
+  Necromante
+}
+
+enum Tipos {
+  Ativa
+  Passiva
+  Magia
+  Tecnica
+  Ultimato
+}
